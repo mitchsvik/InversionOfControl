@@ -42,8 +42,11 @@ function cloneInterface(interfaceName) {
     return clone;
 }
 
+var timer = 0;
+
 function wrapFunction(fnName, fn) {
     return function wrapper() {
+        var startTime = new Date().getTime();
         var args = [];
         var this_log = '';
         Array.prototype.push.apply(args, arguments);
@@ -63,7 +66,10 @@ function wrapFunction(fnName, fn) {
         console.log(this_log);
         fs.appendFile('./application.log', (this_log + '\n'), function(err){});
         calls.inc();
-        return fn.apply(undefined, args);
+        fn.apply(undefined, args);
+        var endTime = new Date().getTime();
+        timer = timer + (endTime - startTime);  
+        return 
     }
 }
 
@@ -76,7 +82,9 @@ function Stats() {
 
 function statsOutput() {
     console.log('Function calls: ' + calls.current +
-                '\nCallback calls: ' + callbacks.current);
+                '\nCallback calls: ' + callbacks.current +
+                '\nFunctions works: ' + timer + 'ms' +
+                '\nAverage time: ' + timer/calls.current);
 }
 
 function stopTimer() {
